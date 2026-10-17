@@ -3,7 +3,7 @@ with stats as (
 ),
 
 ads as (
-    select ad_id, campaign_id
+    select ad_id, campaign_id,ad_name
     from {{ ref('stg_facebook_new_ads') }}
 ),
 
@@ -19,6 +19,7 @@ accounts as (
 
 select
     s.ad_id,
+    a.ad_name,
     s.ad_date,
     a.campaign_id,
     c.campaign_name,

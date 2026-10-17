@@ -4,7 +4,7 @@ with stats as (
 ),
 
 ads as (
-    select ad_id, ad_group_id
+    select ad_id, ad_group_id, ad_name
     from {{ ref('stg_snapchat_ads_ad_history') }}
 ),
 
@@ -24,6 +24,7 @@ campaigns as (
 
 select
     s.ad_detail_id,
+    a.ad_name,
     s.ad_date,
     s.ad_country,
     s.ad_currency_code,
