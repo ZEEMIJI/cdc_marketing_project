@@ -1,0 +1,68 @@
+models:
+  - name: stg_facebook_ads_stats
+    description: "Facebook ad stats. One row per ad per day."
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [ad_id, ad_date]
+    columns:
+      - name: ad_id
+        data_tests:
+          - not_null
+      - name: account_id
+        data_tests:
+          - not_null
+      - name: ad_date
+        data_tests:
+          - not_null
+
+  - name: stg_facebook_new_account
+    description: "Facebook ad accounts. One row per account."
+    columns:
+      - name: account_id
+        data_tests:
+          - unique
+          - not_null
+      - name: ad_currency_code
+        data_tests:
+          - not_null
+
+  - name: stg_facebook_new_adgroup
+    description: "Facebook ad groups. One row per ad group."
+    columns:
+      - name: ad_group_id
+        data_tests:
+          - unique
+          - not_null
+
+  - name: stg_facebook_new_ads
+    description: "Facebook ads. One row per ad."
+    columns:
+      - name: ad_id
+        data_tests:
+          - unique
+          - not_null
+      - name: campaign_id
+        data_tests:
+          - not_null
+      - name: ad_group_id
+        data_tests:
+          - not_null
+      - name: account_id
+        data_tests:
+          - not_null
+      - name: ad_status
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['archived', 'paused', 'active', 'deleted']
+
+  - name: stg_facebook_new_campaign
+    description: "Facebook campaigns. One row per campaign."
+    columns:
+      - name: campaign_id
+        data_tests:
+          - unique
+          - not_null
+    
+

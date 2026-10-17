@@ -1,0 +1,14 @@
+sources:
+  - name: bronze #schema name
+    database: marketing_data_dev
+    schema: bronze  
+    tables:
+      - name: ads_stats
+      - name: new_acccount_de_randomized
+      - name: new_ads_de_randomized
+      - name: new_adgroup_de_randomized
+      - name: new_campaign_de_randomized
+      - name: snapchat_ads_adgroup_history_new_ad_group_names
+      - name: snapchat_ads_campaign_history_new_campaign_names
+      - name: snapchat_ads_stats
+      - name: snapchat_ads_ad_history_new_ad_names

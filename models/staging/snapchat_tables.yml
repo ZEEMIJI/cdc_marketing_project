@@ -1,0 +1,60 @@
+models:
+  - name: stg_snapchat_ads_ad_history
+    description: "Snapchat ads. One row per ad."
+    columns:
+      - name: ad_id
+        data_tests:
+          - unique
+          - not_null
+
+  - name: stg_snapchat_ads_adgroup_history
+    description: "Snapchat ad groups. One row per ad group per version (ad_group_id + ad_group_updated_at)."
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [ad_group_id, ad_group_updated_at]
+    columns:
+      - name: surrogate_key
+        data_tests:
+          - unique
+          - not_null
+      - name: ad_group_id
+        data_tests:
+          - not_null
+      - name: ad_group_updated_at
+        data_tests:
+          - not_null
+      - name: campaign_id
+        data_tests:
+          - not_null
+
+  - name: stg_snapchat_ads_campaign_history
+    description: "Snapchat campaigns. One row per campaign."
+    columns:
+      - name: campaign_id
+        data_tests:
+          - unique
+          - not_null
+      - name: account_id
+        data_tests:
+          - not_null
+
+  - name: stg_snapchat_ads_stats
+    description: "Snapchat ad stats. One row per ad detail per date per country."
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [ad_detail_id, ad_date, ad_country]
+    columns:
+      - name: ad_detail_id
+        data_tests:
+          - not_null
+      - name: ad_date
+        data_tests:
+          - not_null
+      - name: ad_country
+        data_tests:
+          - not_null
+      - name: ad_currency_code
+        data_tests:
+          - not_null

@@ -1,0 +1,54 @@
+version: 2
+
+models:
+  - name: int_snapchat_tables__joined
+    description: "Snapchat stats enriched with campaign name. One row per ad detail per day per country."
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [ad_detail_id, ad_date, ad_country]
+      - dbt_utils.equal_rowcount:
+          arguments:
+            compare_model: ref('stg_snapchat_ads_stats')
+      - dbt_utils.expression_is_true:
+          arguments:
+            expression: "ad_clicks <= ad_impressions"
+    columns:
+      - name: ad_detail_id
+        data_tests:
+          - not_null
+      - name: ad_date
+        data_tests:
+          - not_null
+      - name: ad_country
+        data_tests:
+          - not_null
+      - name: ad_currency_code
+        data_tests:
+          - not_null
+      - name: ad_spend
+        description: "Spend in the stated currency. Do not sum across currencies."
+        data_tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+                inclusive: true
+      - name: ad_impressions
+        data_tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+                inclusive: true
+      - name: ad_clicks
+        data_tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+                inclusive: true
+      - name: campaign_id
+        data_tests:
+          - not_null
+      - name: campaign_name
+        data_tests:
+          - not_null
