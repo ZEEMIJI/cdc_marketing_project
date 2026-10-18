@@ -1,0 +1,115 @@
+
+models:
+  - name: mart_dim_campaign
+    description: "One row per campaign per platform. Join to the fact table on campaign_platform_id."
+    columns:
+      - name: campaign_platform_id
+        description: "Join key built from platform + campaign_id. Not for reporting; use campaign_name."
+        data_tests:
+          - unique
+          - not_null
+      - name: campaign_id
+        description: "Campaign ID as it appears in Facebook or Snapchat."
+        data_tests:
+          - not_null
+      - name: campaign_name
+        description: "Campaign name."
+        data_tests:
+          - not_null
+
+  - name: mart_dim_ad
+    description: "One row per ad per platform. Join to the fact table on ad_platform_id."
+    columns:
+      - name: ad_platform_id
+        description: "Join key built from platform + ad_id. Not for reporting; use ad_name."
+        data_tests:
+          - unique
+          - not_null
+      - name: ad_id
+        description: "Ad ID as it appears in Facebook or Snapchat."
+        data_tests:
+          - not_null
+      - name: ad_name
+        description: "Ad name."
+        data tests:
+         - not null
+
+  - name: mart_fct_ads_performance_daily
+    description: >
+      Ad performance. One row per platform, ad, day and currency.
+      Spend is in currency_code; do not sum across currencies.
+      Snapchat country is summed away. For campaign totals, join to
+      mart_dim_campaign on campaign_platform_id and group by campaign.
+      Cost per click = sum(spend) / sum(clicks); never average the ratio.
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [platform, ad_id, date, currency_code]
+      - dbt_utils.expression_is_true:
+          arguments:
+            expression: "clicks <= impressions"
+    columns:
+      - name: ad_platform_id
+        description: "Join key to mart_dim_ad."
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('mart_dim_ad')
+                field: ad_platform_id
+      - name: campaign_platform_id
+        description: "Join key to mart_dim_campaign."
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('mart_dim_campaign')
+                field: campaign_platform_id
+      - name: platform
+        description: "facebook or snapchat."
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['facebook', 'snapchat']
+      - name: ad_id
+        description: "Ad ID as it appears in Facebook or Snapchat."
+        data_tests:
+          - not_null
+      - name: campaign_id
+        description: "Campaign ID as it appears in Facebook or Snapchat."
+        data_tests:
+          - not_null
+      - name: date
+        description: "Day the stats apply to."
+        data_tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              arguments:
+               expression: "<= current_date()"
+      - name: currency_code
+        description: "Currency of spend."
+        data_tests:
+          - not_null
+      - name: spend
+        description: "Spend in currency_code."
+        data_tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+                inclusive: true
+      - name: impressions
+        description: "Impressions served."
+        data_tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+                inclusive: true
+      - name: clicks
+        description: "Clicks."
+        data_tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+                inclusive: true

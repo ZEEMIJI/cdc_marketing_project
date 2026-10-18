@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: int_snapchat_tables__joined
+  - name: int_snapchat_tables_joined
     description: "Snapchat stats enriched with campaign name. One row per ad detail per day per country."
     data_tests:
       - dbt_utils.unique_combination_of_columns:
