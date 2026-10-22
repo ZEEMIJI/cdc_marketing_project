@@ -1,6 +1,6 @@
 sources:
   - name: bronze #schema name
-    database: marketing_data_dev
+    database: '{{ target.catalog }}'
     schema: bronze  
     tables:
       - name: ads_stats
